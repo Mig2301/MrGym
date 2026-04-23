@@ -3,163 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MrGym Premium</title>
+    <title>MrGym Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root { --accent: #16E0C4; --bg: #0a0e17; --card: #151b27; --text: #ffffff; --input: #1e2533; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 70px; }
+        :root { --accent: #16E0C4; --bg: #0a0e17; --card: #151b27; --text: #fff; --input: #1e2533; }
         
-        /* LOGIN PREDICTIVO */
-        #login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-        .login-box { background: var(--card); padding: 40px; border-radius: 24px; width: 90%; max-width: 400px; text-align: center; border: 1px solid #2d3748; }
-        .login-box h1 { color: var(--accent); font-size: 3rem; margin: 0 0 10px 0; }
-        
-        /* BUSCADOR INTELIGENTE */
-        .header { position: sticky; top: 0; background: rgba(10, 14, 23, 0.95); backdrop-filter: blur(10px); padding: 15px; border-bottom: 2px solid var(--accent); z-index: 1000; }
-        .search-container { position: relative; max-width: 600px; margin: auto; }
-        input, select { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #2d3748; background: var(--input); color: #fff; font-size: 1rem; box-sizing: border-box; outline: none; }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(22, 224, 196, 0.2); }
+        /* BLOQUEO DE REFRESH EN CELULAR */
+        html, body { 
+            overscroll-behavior-y: contain; 
+            margin: 0; padding: 0; background: var(--bg); color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-        /* LISTAS Y CARDS */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; padding: 15px; }
-        .card { background: var(--card); padding: 20px; border-radius: 18px; border: 1px solid #2d3748; position: relative; transition: 0.3s; }
-        .card:hover { border-color: var(--accent); transform: translateY(-3px); }
-        .status-badge { position: absolute; top: 15px; right: 15px; font-size: 0.7rem; padding: 4px 8px; border-radius: 20px; }
+        .header { position: sticky; top: 0; background: rgba(10, 14, 23, 0.9); backdrop-filter: blur(10px); padding: 15px; border-bottom: 2px solid var(--accent); z-index: 1000; }
         
-        /* TAB BAR */
-        .nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #2d3748; }
-        .tab { cursor: pointer; text-align: center; font-size: 0.7rem; color: #64748b; transition: 0.3s; }
-        .tab.active { color: var(--accent); font-weight: bold; }
+        /* BUSCADOR CON FILTRO */
+        .search-area { max-width: 600px; margin: auto; }
+        .search-flex { display: flex; gap: 10px; align-items: center; }
+        input[type="text"] { flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #334155; background: var(--input); color: #fff; font-size: 1rem; }
         
-        .btn { background: var(--accent); color: #000; padding: 15px; border: none; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; margin-top: 10px; }
+        /* CARD DISEÑO NUEVO */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 15px; padding: 15px; }
+        .card { 
+            background: var(--card); border-radius: 20px; padding: 15px; border: 1px solid #2d3748;
+            display: flex; gap: 15px; align-items: center;
+        }
+        .socio-foto { 
+            width: 80px; height: 80px; border-radius: 15px; background: #1e2533; 
+            object-fit: cover; border: 2px solid var(--accent); cursor: pointer;
+        }
+        .socio-info { flex: 1; min-width: 0; }
+        .socio-info h3 { margin: 0; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .socio-info p { margin: 3px 0; font-size: 0.8rem; color: #94a3b8; }
+
+        /* BOTONES */
+        .btn-group { display: flex; gap: 8px; margin-top: 8px; }
+        .btn-main { 
+            background: var(--accent); color: #000; border: none; padding: 12px; 
+            border-radius: 8px; font-weight: bold; flex: 1; font-size: 0.85rem; cursor: pointer;
+        }
+        .btn-sec { 
+            background: #2d3748; color: #fff; border: none; padding: 10px; 
+            border-radius: 8px; font-size: 0.75rem; cursor: pointer;
+        }
+
+        /* NAV */
+        .nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #2d3748; z-index: 1000; }
+        .tab { text-align: center; font-size: 0.7rem; color: #64748b; cursor: pointer; }
+        .tab.active { color: var(--accent); }
+
         .hidden { display: none !important; }
-        
-        /* SECCIÓN EN SALA */
-        .sala-indicator { background: rgba(22, 224, 196, 0.1); border-left: 4px solid var(--accent); padding: 10px; margin-bottom: 15px; border-radius: 8px; }
+        label.checkbox-label { font-size: 0.8rem; display: flex; align-items: center; gap: 5px; color: var(--accent); white-space: nowrap; }
     </style>
 </head>
 <body>
 
-<div id="login-screen">
-    <div class="login-box">
-        <h1>MrGym</h1>
-        <p style="color:#64748b">Gestión de Alto Rendimiento</p>
-        <input list="users-list" id="l-user" placeholder="Usuario">
-        <datalist id="users-list"></datalist>
-        <input type="password" id="l-pass" placeholder="Contraseña" style="margin-top:15px;">
-        <button class="btn" onclick="tryLogin()" id="btn-login" style="margin-top:20px;">INGRESAR</button>
-    </div>
-</div>
-
-<div id="app" class="hidden">
+<div id="app">
     <div class="header">
-        <div style="display:flex; justify-content:space-between; align-items:center; max-width:600px; margin:auto;">
-            <h2 style="color:var(--accent); margin:0;">MrGym Pro</h2>
-            <div id="user-info" style="font-size:0.8rem; color:var(--accent)"></div>
-        </div>
-        <div class="search-container" style="margin-top:10px;">
-            <input type="text" id="main-bus" placeholder="🔍 Buscar socio o DNI..." onkeyup="motorBusqueda()">
-        </div>
-    </div>
-
-    <!-- VISTA 1: SOCIOS / ASISTENCIA -->
-    <div id="v-socios" class="view">
-        <div class="grid" id="grid-socios"></div>
-    </div>
-
-    <!-- VISTA 2: EN SALA / VENTAS -->
-    <div id="v-sala" class="view hidden">
-        <div class="container" style="padding:15px;">
-            <h3 style="color:var(--accent)">SOCIOS EN SALA (Últimas 2h)</h3>
-            <div id="grid-sala" class="grid"></div>
+        <div class="search-area">
+            <div class="search-flex">
+                <input type="text" id="bus" placeholder="Buscar socio..." onkeyup="filtrar()">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="solo-activos" onchange="filtrar()"> Activos
+                </label>
+            </div>
         </div>
     </div>
 
-    <!-- VISTA 3: INVENTARIO -->
-    <div id="v-stock" class="view hidden">
-        <div class="grid" id="grid-stock"></div>
-    </div>
+    <div id="v-socios" class="grid view"></div>
+    <div id="v-sala" class="grid view hidden"></div>
 
     <nav class="nav">
         <div class="tab active" onclick="showTab('socios', this)">👤<br>Socios</div>
         <div class="tab" onclick="showTab('sala', this)">🔥<br>En Sala</div>
-        <div class="tab" onclick="showTab('stock', this)">📦<br>Inventario</div>
-        <div class="tab" onclick="location.reload()">🔄<br>Salir</div>
+        <div class="tab" onclick="location.reload()">🔄<br>Cargar</div>
     </nav>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwsUvs6oXeY-elRIR6r45RWZHngKnTEfa5AaW-5fBqTckBauy_LHbT6gYlL6V5jiFD26A/exec";
-    let DB = { usuarios: [], membresias: [], productos: [], login: [], enSala: [] };
+    const API = "https://script.google.com/macros/s/AKfycbw7xaoV8wtZBqBhP3eKjbg08cS9Y0EIAnUFQ8k0InkodslOFpN73iAX8oMSoHhuG0B-mA/exec";
+    let DB = { socios: [], membresias: [], enSala: [] };
 
-    async function call(action, data = {}) {
-        const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, data }) });
+    async function req(action, data = {}) {
+        const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action, data }) });
         return await r.json();
     }
 
-    // Inicialización
     window.onload = async () => {
-        const res = await call('INIT_DATA');
+        const res = await req('INIT_DATA');
         DB = res;
-        document.getElementById('users-list').innerHTML = res.login.map(l => `<option value="${l.u}">`).join('');
+        render(DB.socios, 'v-socios');
     };
 
-    function tryLogin() {
-        const u = document.getElementById('l-user').value;
-        const p = document.getElementById('l-pass').value;
-        const match = DB.login.find(l => l.u.toLowerCase() === u.toLowerCase() && l.c === p);
-        if(match) {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app').classList.remove('hidden');
-            document.getElementById('user-info').innerText = `${match.u} (${match.r})`;
-            renderSocios(DB.usuarios);
-        } else {
-            Swal.fire('Error', 'Usuario o clave incorrecta', 'error');
-        }
-    }
-
-    function renderSocios(list) {
-        const cont = document.getElementById('grid-socios');
-        cont.innerHTML = list.slice(0, 50).map(s => {
+    function render(list, containerId) {
+        const cont = document.getElementById(containerId);
+        cont.innerHTML = list.map(s => {
             const isActivo = s.ESTADO === 'ACTIVO';
+            const nombreFull = `${s.NOMBRES} ${s.A_PATERNO} ${s.A_MATERNO}`;
+            const foto = s.URL_FOTO || 'https://www.w3schools.com/howto/img_avatar.png';
+            
             return `
             <div class="card">
-                <span class="status-badge" style="background:${isActivo ? '#16E0C4' : '#f87171'}; color:#000">
-                    ${s.ESTADO}
-                </span>
-                <h3 style="margin:0">${s.NOMBRES}</h3>
-                <p style="color:#64748b; font-size:0.8rem; margin:5px 0;">DNI: ${s.DNI} | ID: ${s.ID_SOCIO}</p>
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <button class="btn" style="padding:8px; font-size:0.8rem;" onclick="accionSocio('${s.ID_SOCIO}')">
-                        ${isActivo ? '⚡ CHECK-IN' : '💳 MATRICULAR'}
-                    </button>
-                    <button class="btn" style="padding:8px; font-size:0.8rem; background:#444; color:#fff;" onclick="abrirMedidas('${s.ID_SOCIO}')">
-                        📏 MEDIDAS
-                    </button>
+                <img src="${foto}" class="socio-foto" onclick="subirFoto('${s.ID_SOCIO}')" onerror="this.src='https://www.w3schools.com/howto/img_avatar.png'">
+                <div class="socio-info">
+                    <h3>${nombreFull}</h3>
+                    <p>DNI: ${s.DNI} | <b>${s.ESTADO}</b></p>
+                    <div class="btn-group">
+                        <button class="btn-main" onclick="asistencia('${s.ID_SOCIO}')">ASISTENCIA</button>
+                        ${!isActivo ? `<button class="btn-sec" onclick="modalMatricular('${s.ID_SOCIO}')">MATRICULAR</button>` : ''}
+                    </div>
                 </div>
             </div>`;
         }).join('');
     }
 
-    async function accionSocio(id) {
-        const socio = DB.usuarios.find(u => u.ID_SOCIO === id);
-        if(socio.ESTADO === 'ACTIVO') {
-            const res = await call('CHECK_IN', { idSocio: id });
-            Swal.fire('Bienvenido', `Check-in realizado a las ${res.hora}`, 'success');
-        } else {
-            Swal.fire('Matrícula', 'Redirigiendo a zona de pagos...', 'info');
-            // Aquí llamarías a tu función de membresías
-        }
+    function filtrar() {
+        const q = document.getElementById('bus').value.toLowerCase();
+        const soloActivos = document.getElementById('solo-activos').checked;
+        const res = DB.socios.filter(s => {
+            const matchQuery = `${s.NOMBRES} ${s.A_PATERNO} ${s.DNI}`.toLowerCase().includes(q);
+            const matchActivo = soloActivos ? s.ESTADO === 'ACTIVO' : true;
+            return matchQuery && matchActivo;
+        });
+        render(res, 'v-socios');
     }
 
-    function motorBusqueda() {
-        const q = document.getElementById('main-bus').value.toLowerCase();
-        const words = q.split(' ').filter(w => w.length > 0);
-        const filtrados = DB.usuarios.filter(s => {
-            const full = `${s.NOMBRES} ${s.A_PATERNO} ${s.DNI} ${s.ID_SOCIO}`.toLowerCase();
-            return words.every(w => full.includes(w));
-        });
-        renderSocios(filtrados);
+    async function asistencia(id) {
+        const res = await req('ASISTENCIA', { idSocio: id });
+        if(res.success) {
+            Swal.fire({ title: '¡Bienvenido!', text: `Entrada: ${res.hora}`, icon: 'success', timer: 1500, showConfirmButton: false });
+            // Actualizar lista en sala localmente
+            if(!DB.enSala.includes(id)) DB.enSala.push(id);
+        }
     }
 
     function showTab(t, el) {
@@ -167,56 +142,58 @@
         document.getElementById('v-'+t).classList.remove('hidden');
         document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
         el.classList.add('active');
-        if(t === 'sala') renderSala();
-        if(t === 'stock') renderStock();
+        if(t === 'sala') {
+            const list = DB.socios.filter(u => DB.enSala.includes(u.ID_SOCIO));
+            render(list, 'v-sala');
+        }
     }
 
-    function renderSala() {
-        const cont = document.getElementById('grid-sala');
-        const list = DB.usuarios.filter(u => DB.enSala.includes(u.ID_SOCIO));
-        cont.innerHTML = list.length ? list.map(s => `
-            <div class="card" style="border-color:var(--accent)">
-                <h3 style="margin:0">${s.NOMBRES}</h3>
-                <p style="color:var(--accent); font-size:0.8rem;">En sala ahora</p>
-                <button class="btn" style="background:#fff" onclick="venderASocio('${s.ID_SOCIO}')">🛒 VENDER SUPLEMENTO</button>
-            </div>`).join('') : '<p style="text-align:center; width:100%;">No hay socios registrados en sala ahora.</p>';
-    }
+    async function modalMatricular(id) {
+        const socio = DB.socios.find(s => s.ID_SOCIO === id);
+        const options = DB.membresias.reduce((acc, m) => {
+            acc[m.ID_MEM] = `${m.NOMBRE_MEMBRESIA} - S/ ${m.PRECIO}`;
+            return acc;
+        }, {});
 
-    function renderStock() {
-        const cont = document.getElementById('grid-stock');
-        cont.innerHTML = DB.productos.map(p => `
-            <div class="card">
-                <h3>${p.PRODUCTO}</h3>
-                <p style="color:var(--accent)">S/ ${p.PRECIO_UNIT}</p>
-                <p>Stock: <b>${p.STOCK}</b></p>
-                <button class="btn" onclick="venderASocio('WALK-IN', '${p.PRODUCTO}')">VENDER</button>
-            </div>`).join('');
-    }
-
-    // Funciones de Venta y Medidas (SweetAlert2 Modals)
-    async function abrirMedidas(id) {
-        const { value: formValues } = await Swal.fire({
-            title: 'Control de Medidas',
-            html:
-                '<input id="sw-peso" class="swal2-input" placeholder="Peso (kg)">' +
-                '<input id="sw-objetivo" class="swal2-input" placeholder="Objetivo">' +
-                '<input id="sw-cintura" class="swal2-input" placeholder="Cintura (cm)">',
-            focusConfirm: false,
-            preConfirm: () => {
-                return {
-                    idSocio: id,
-                    peso: document.getElementById('sw-peso').value,
-                    objetivo: document.getElementById('sw-objetivo').value,
-                    cintura: document.getElementById('sw-cintura').value
-                }
-            }
+        const { value: planId } = await Swal.fire({
+            title: 'Matricular Socio',
+            input: 'select',
+            inputOptions: options,
+            inputPlaceholder: 'Seleccione un plan',
+            showCancelButton: true
         });
-        if (formValues) {
-            await call('GUARDAR_MEDIDAS', formValues);
-            Swal.fire('Guardado', 'Las medidas se registraron correctamente', 'success');
+
+        if (planId) {
+            const plan = DB.membresias.find(m => m.ID_MEM === planId);
+            const res = await req('MATRICULAR', {
+                idSocio: id, dni: socio.DNI, nom: socio.NOMBRES,
+                idMem: planId, plan: plan.NOMBRE_MEMBRESIA,
+                inicio: new Date().toISOString().split('T')[0],
+                fin: 'Calculado...', // Lógica de meses/días
+                total: plan.PRECIO, abono: plan.PRECIO, saldo: 0, metodo: 'EFECTIVO'
+            });
+            if(res.success) Swal.fire('Éxito', 'Socio matriculado', 'success');
+        }
+    }
+
+    async function subirFoto(id) {
+        const { value: file } = await Swal.fire({
+            title: 'Actualizar Foto',
+            input: 'file',
+            inputAttributes: { 'accept': 'image/*', 'capture': 'environment' }
+        });
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const res = await req('UPLOAD_FOTO', { idSocio: id, base64: e.target.result });
+                if(res.success) {
+                    Swal.fire('Guardado', 'Foto actualizada', 'success');
+                    location.reload();
+                }
+            };
+            reader.readAsDataURL(file);
         }
     }
 </script>
-
 </body>
 </html>
